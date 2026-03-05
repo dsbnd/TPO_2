@@ -25,21 +25,21 @@ class Level1IntegrationTest {
     private static final double PRECISION = 1e-6;
     private static final double DELTA = 1e-5;
 
-    // Spy для проверки вызовов (реальные объекты)
+     
     @Spy
     private SinFunction spySin;
 
     @Spy
     private LnFunction spyLn;
 
-    // Mock для подмены поведения
+     
     @Mock
     private SinFunction mockSin;
 
     @Mock
     private LnFunction mockLn;
 
-    // ============= ТЕСТЫ ДЛЯ COS С SPY =============
+     
 
     @Test
     @DisplayName("Проверка, что Cos вызывает Sin")
@@ -48,7 +48,7 @@ class Level1IntegrationTest {
 
         cos.calculate(Math.PI / 2, PRECISION);
 
-        // Проверяем, что sin был вызван (потому что cos(x) = sin(x + π/2))
+         
         verify(spySin, atLeastOnce()).calculate(anyDouble(), anyDouble());
         verify(spySin, times(1)).calculate(eq(Math.PI / 2 + Math.PI / 2), eq(PRECISION));
     }
@@ -62,7 +62,7 @@ class Level1IntegrationTest {
         cos.calculate(Math.PI / 2, PRECISION);
         cos.calculate(Math.PI, PRECISION);
 
-        // Проверяем, что sin был вызван 3 раза
+         
         verify(spySin, times(3)).calculate(anyDouble(), anyDouble());
     }
 
@@ -74,11 +74,11 @@ class Level1IntegrationTest {
 
         cos.calculate(1.0, testPrecision);
 
-        // Проверяем, что точность передается в sin
+         
         verify(spySin, times(1)).calculate(anyDouble(), eq(testPrecision));
     }
 
-    // ============= ТЕСТЫ ДЛЯ LOG С SPY =============
+     
 
     @Test
     @DisplayName("Проверка, что Log2 вызывает Ln дважды")
@@ -87,10 +87,11 @@ class Level1IntegrationTest {
 
         log2.calculate(2.0, PRECISION);
 
-        // Ln должен быть вызван дважды: для x и для base
+         
         verify(spyLn, times(2)).calculate(anyDouble(), anyDouble());
-        verify(spyLn, times(1)).calculate(eq(2.0), eq(PRECISION));
-        verify(spyLn, times(1)).calculate(eq(2.0), eq(PRECISION)); // для base
+
+         
+        verify(spyLn, times(2)).calculate(eq(2.0), eq(PRECISION));
     }
 
     @Test
@@ -116,7 +117,7 @@ class Level1IntegrationTest {
         log3.calculate(9.0, PRECISION);
         log5.calculate(25.0, PRECISION);
 
-        // Проверяем вызовы для каждого основания
+         
         verify(spyLn, times(1)).calculate(eq(8.0), eq(PRECISION));
         verify(spyLn, times(1)).calculate(eq(2.0), eq(PRECISION));
         verify(spyLn, times(1)).calculate(eq(9.0), eq(PRECISION));
@@ -125,14 +126,15 @@ class Level1IntegrationTest {
         verify(spyLn, times(1)).calculate(eq(5.0), eq(PRECISION));
     }
 
-    // ============= ТЕСТЫ С MOCK =============
+     
 
     @Test
     @DisplayName("Проверка Cos с Mock Sin")
     void shouldCalculateCosWithMockSin() {
-        // Настраиваем поведение мока
-        when(mockSin.calculate(eq(Math.PI / 2 + Math.PI / 2), anyDouble())).thenReturn(1.0);
-        when(mockSin.calculate(eq(0.0 + Math.PI / 2), anyDouble())).thenReturn(0.0);
+         
+        when(mockSin.calculate(eq(Math.PI / 2), anyDouble())).thenReturn(1.0);
+         
+        when(mockSin.calculate(eq(Math.PI), anyDouble())).thenReturn(0.0);
 
         CosFunction cos = new CosFunction(mockSin);
 
@@ -147,10 +149,10 @@ class Level1IntegrationTest {
     @DisplayName("Проверка Cos с Mock для всех значений из CSV")
     @CsvFileSource(resources = "/level1/cos.csv", numLinesToSkip = 1, delimiter = ',')
     void shouldCalculateCosWithMockForAllValues(double x, double expected) {
-        // Для cos(x) = sin(x + π/2)
+         
         double sinArg = x + Math.PI / 2;
 
-        // Настраиваем мок
+         
         when(mockSin.calculate(eq(sinArg), anyDouble())).thenReturn(expected);
 
         CosFunction cos = new CosFunction(mockSin);
@@ -162,9 +164,9 @@ class Level1IntegrationTest {
     @Test
     @DisplayName("Проверка Log2 с Mock Ln")
     void shouldCalculateLog2WithMockLn() {
-        // log2(8) = ln(8)/ln(2) = 3
-        when(mockLn.calculate(eq(8.0), anyDouble())).thenReturn(2.07944); // ln(8)
-        when(mockLn.calculate(eq(2.0), anyDouble())).thenReturn(0.693147); // ln(2)
+         
+        when(mockLn.calculate(eq(8.0), anyDouble())).thenReturn(2.07944);  
+        when(mockLn.calculate(eq(2.0), anyDouble())).thenReturn(0.693147);  
 
         LogFunction log2 = new LogFunction(mockLn, 2.0);
         assertEquals(3.0, log2.calculate(8.0, PRECISION), DELTA);
@@ -177,21 +179,28 @@ class Level1IntegrationTest {
     @DisplayName("Проверка Log с Mock для всех значений из CSV")
     @CsvFileSource(resources = "/level1/log.csv", numLinesToSkip = 1, delimiter = ',')
     void shouldCalculateLogWithMockForAllValues(double x, double base, double expected) {
-        // ln(x) и ln(base) настраиваем так, чтобы их отношение дало expected
         double lnX = expected * Math.log(base);
         double lnBase = Math.log(base);
 
-        when(mockLn.calculate(eq(x), anyDouble())).thenReturn(lnX);
-        when(mockLn.calculate(eq(base), anyDouble())).thenReturn(lnBase);
+        lenient().when(mockLn.calculate(eq(x), anyDouble())).thenReturn(lnX);
+        lenient().when(mockLn.calculate(eq(base), anyDouble())).thenReturn(lnBase);
 
         LogFunction log = new LogFunction(mockLn, base);
         assertEquals(expected, log.calculate(x, PRECISION), DELTA);
 
-        verify(mockLn, times(1)).calculate(eq(x), anyDouble());
-        verify(mockLn, times(1)).calculate(eq(base), anyDouble());
-    }
+        if (Math.abs(x - base) < 1e-10) {   
+             
+            verify(mockLn, times(2)).calculate(eq(x), anyDouble());
+        } else {
+             
+            verify(mockLn, times(1)).calculate(eq(x), anyDouble());
+            verify(mockLn, times(1)).calculate(eq(base), anyDouble());
+        }
 
-    // ============= ТЕСТЫ НА ВЗАИМОДЕЙСТВИЕ =============
+         
+        verify(mockLn, times(2)).calculate(anyDouble(), anyDouble());
+    }
+     
 
     @Test
     @DisplayName("Проверка, что Cos и Log не влияют друг на друга")
@@ -203,9 +212,8 @@ class Level1IntegrationTest {
         log2.calculate(2.0, PRECISION);
 
         verify(spySin, times(1)).calculate(anyDouble(), anyDouble());
-        verify(spyLn, times(2)).calculate(anyDouble(), anyDouble()); // 2 раза для log2
+        verify(spyLn, times(2)).calculate(anyDouble(), anyDouble());  
 
-        // Проверяем, что нет交叉ных вызовов
         verify(spySin, never()).calculate(eq(2.0), anyDouble());
         verify(spyLn, never()).calculate(eq(0.0), anyDouble());
     }
@@ -223,23 +231,21 @@ class Level1IntegrationTest {
         log5.calculate(5.0, PRECISION);
         log10.calculate(10.0, PRECISION);
 
-        // Каждый log вызывает ln дважды, всего 8 вызовов
+         
         verify(spyLn, times(8)).calculate(anyDouble(), anyDouble());
     }
 
     @Test
     @DisplayName("Проверка обработки исключений в цепочке вызовов")
     void shouldHandleExceptionsInChain() {
-        // Настраиваем мок на выброс исключения
-        when(mockLn.calculate(eq(0.0), anyDouble()))
-                .thenThrow(new IllegalArgumentException("x must be > 0"));
+        when(mockLn.calculate(eq(2.0), anyDouble()))
+                .thenThrow(new IllegalArgumentException("Ошибка в ln"));
 
         LogFunction log2 = new LogFunction(mockLn, 2.0);
 
-        // Исключение должно проброситься
         assertThrows(IllegalArgumentException.class,
-                () -> log2.calculate(0.0, PRECISION));
+                () -> log2.calculate(2.0, PRECISION));
 
-        verify(mockLn, times(1)).calculate(eq(0.0), anyDouble());
+        verify(mockLn, times(1)).calculate(eq(2.0), anyDouble());
     }
 }

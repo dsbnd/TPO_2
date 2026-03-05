@@ -5,20 +5,32 @@ import org.example.level0.MathFunction;
 import org.example.level1.LogFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class LogFunctionTest {
 
     private MathFunction lnFunction;
     private static final double PRECISION = 1e-6;
     private static final double DELTA = 1e-5;
 
+     
+    @Mock
+    private MathFunction lnMock;
+
     @BeforeEach
     void setUp() {
+         
         lnFunction = new LnFunction();
     }
 
@@ -45,5 +57,16 @@ class LogFunctionTest {
         LogFunction logFunction = new LogFunction(lnFunction, 2.0);
         assertThrows(IllegalArgumentException.class,
                 () -> logFunction.calculate(x, PRECISION));
+    }
+
+    @Test
+    void testLogWithMock() {
+        LogFunction logWithMock = new LogFunction(lnMock, 2.0);
+
+        double x = 4.0;
+        when(lnMock.calculate(eq(x), anyDouble())).thenReturn(1.38629);
+        when(lnMock.calculate(eq(2.0), anyDouble())).thenReturn(0.693147);
+
+        assertEquals(2.0, logWithMock.calculate(x, PRECISION), DELTA);
     }
 }

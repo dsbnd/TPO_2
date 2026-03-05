@@ -1,4 +1,4 @@
-package org.example.level2;
+package org.example.level2.module;
 
 import org.example.level0.MathFunction;
 import org.example.level2.TanFunction;

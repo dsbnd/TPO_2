@@ -16,10 +16,17 @@ public class LogFunction implements MathFunction {
 
     @Override
     public double calculate(double x, double precision) {
+        validateX(x);
+        return calculateInternal(x, precision);
+    }
+
+    private void validateX(double x) {
         if (x <= 0 || Double.isNaN(x) || Double.isInfinite(x)) {
             throw new IllegalArgumentException("x must be > 0");
         }
-        // log_a(x) = ln(x) / ln(a)
+    }
+
+    protected double calculateInternal(double x, double precision) {
         return lnFunction.calculate(x, precision) / lnFunction.calculate(base, precision);
     }
 }
