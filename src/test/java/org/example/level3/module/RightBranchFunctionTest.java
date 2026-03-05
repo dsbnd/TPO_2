@@ -26,7 +26,6 @@ class RightBranchFunctionTest {
 
     @BeforeEach
     void setUp() {
-        // Собираем правую ветку, передавая моки логарифмов через конструктор
         rightBranch = new RightBranchFunction(lnMock, log2Mock, log3Mock, log5Mock, log10Mock);
     }
 
@@ -48,21 +47,14 @@ class RightBranchFunctionTest {
 
     @Test
     void shouldThrowExceptionWhenLog5IsZero() {
-        // Тест на проверку деления на ноль. 
-        // В нашей ОДЗ мы выяснили, что при x = 1.0, log5(1.0) = 0.0
-        // А в знаменателе есть деление на log5(x)^3.
         double x = 1.0;
 
-        // Обучаем моки возвращать нули для x = 1.0
         when(lnMock.calculate(x, PRECISION)).thenReturn(0.0);
         when(log10Mock.calculate(x, PRECISION)).thenReturn(0.0);
         when(log2Mock.calculate(x, PRECISION)).thenReturn(0.0);
         when(log3Mock.calculate(x, PRECISION)).thenReturn(0.0);
-        
-        // Главный виновник торжества (в знаменателе дроби)
         when(log5Mock.calculate(x, PRECISION)).thenReturn(0.0);
 
-        // Проверяем, что наша функция корректно упадет с ArithmeticException
         assertThrows(ArithmeticException.class, () -> {
             rightBranch.calculate(x, PRECISION);
         });
@@ -70,9 +62,8 @@ class RightBranchFunctionTest {
 
     @Test
     void shouldCalculateCorrectlyForXInZeroToOneInterval() {
-        double x = 0.5; // Значение из интервала (0; 1)
+        double x = 0.5;
 
-        // Обучаем моки возвращать отрицательные значения логарифмов
         when(lnMock.calculate(x, PRECISION)).thenReturn(-0.693147);
         when(log10Mock.calculate(x, PRECISION)).thenReturn(-0.301030);
         when(log2Mock.calculate(x, PRECISION)).thenReturn(-1.0);
@@ -80,8 +71,6 @@ class RightBranchFunctionTest {
         when(log5Mock.calculate(x, PRECISION)).thenReturn(-0.430677);
 
         double actualResult = rightBranch.calculate(x, PRECISION);
-
-        // Ожидаемый результат для x = 0.5
         double expectedResult = -0.048633;
 
         assertEquals(expectedResult, actualResult, 0.0001);
