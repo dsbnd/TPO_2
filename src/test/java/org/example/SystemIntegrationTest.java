@@ -31,29 +31,24 @@ class SystemIntegrationTest {
     private static final double PRECISION = 1e-6;
     private static final double DELTA = 1e-4;
 
-     
     @Spy
     private SinFunction spySin = new SinFunction();
     @Spy
     private LnFunction spyLn = new LnFunction();
 
-     
     private CosFunction spyCos;
     private LogFunction spyLog2;
     private LogFunction spyLog3;
     private LogFunction spyLog5;
     private LogFunction spyLog10;
 
-     
     private CscFunction spyCsc;
     private SecFunction spySec;
     private TanFunction spyTan;
 
-     
     private LeftBranchFunction spyLeft;
     private RightBranchFunction spyRight;
 
-     
     @Mock
     private LeftBranchFunction mockLeft;
     @Mock

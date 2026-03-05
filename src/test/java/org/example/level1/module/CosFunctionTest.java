@@ -19,18 +19,15 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)  
 class CosFunctionTest {
-
     private CosFunction cosFunction;
     private static final double PRECISION = 1e-6;
     private static final double DELTA = 1e-5;
 
-     
     @Mock
     private MathFunction sinMock;
 
     @BeforeEach
     void setUp() {
-         
         MathFunction sinFunction = new SinFunction();
         cosFunction = new CosFunction(sinFunction);
     }
@@ -62,25 +59,18 @@ class CosFunctionTest {
 
     @Test
     void testCosWithMock() {
-         
         CosFunction cosWithMock = new CosFunction(sinMock);
 
         double x = 1.0;
-        double expectedSinArg = x + Math.PI / 2;  
-
+        double expectedSinArg = x + Math.PI / 2;
          
         double sinValue = 0.5403023058681398;
-
-         
         double expectedCos = 0.5403023058681398;
 
-         
         when(sinMock.calculate(eq(expectedSinArg), anyDouble())).thenReturn(sinValue);
 
-         
         assertEquals(expectedCos, cosWithMock.calculate(x, PRECISION), DELTA);
 
-         
         verify(sinMock, times(1)).calculate(eq(expectedSinArg), anyDouble());
     }
 }

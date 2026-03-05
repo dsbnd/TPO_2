@@ -5,6 +5,8 @@ import org.example.level3.LeftBranchFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -26,7 +28,6 @@ class LeftBranchFunctionTest {
 
     @BeforeEach
     void setUp() {
-        // Собираем ветку, подсовывая ей моки тригонометрии
         leftBranch = new LeftBranchFunction(sinMock, cosMock, cscMock, secMock, tanMock);
     }
 
@@ -47,17 +48,45 @@ class LeftBranchFunctionTest {
 
     @Test
     void shouldThrowExceptionWhenSecThrowsException() {
-        double x = -3.14 / 2; // Точка, где косинус равен нулю
+        double x = -3.14 / 2; //точка, в кот косинус равен нулю
 
-        // Имитируем, что при попытке посчитать секанс вылетает ошибка деления на ноль
         when(secMock.calculate(x, PRECISION)).thenThrow(new ArithmeticException("Division by zero in SecFunction"));
-
-        // Можем настроить и другие моки, но это необязательно,
-        // так как при вызове sec.calculate() внутри левой ветки выполнение прервется
-
-        // Проверяем, что левая ветка тоже упала с ArithmeticException
         assertThrows(ArithmeticException.class, () -> {
             leftBranch.calculate(x, PRECISION);
         });
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCscThrowsException() {
+        double x = 0.0;
+        when(cscMock.calculate(x, PRECISION)).thenThrow(new ArithmeticException("Division by zero in CscFunction"));
+
+        assertThrows(ArithmeticException.class, () -> {
+            leftBranch.calculate(x, PRECISION);
+        });
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            //-пи/12 (-0.2618)
+            "-0.2618, -0.258819, 0.965926, -3.863703, 1.035276, -0.267949, 5.7165944405101744e26",
+
+            //-пи/6 (-0.5235)
+            "-0.5235, -0.5, 0.866025, -2.0, 1.1547, -0.57735, 2.19386826e18"
+    })
+    void shouldCalculateCorrectlyForVariousX(
+            double x,
+            double sinVal, double cosVal, double cscVal, double secVal, double tanVal,
+            double expectedResult) {
+
+        when(sinMock.calculate(x, PRECISION)).thenReturn(sinVal);
+        when(cosMock.calculate(x, PRECISION)).thenReturn(cosVal);
+        when(cscMock.calculate(x, PRECISION)).thenReturn(cscVal);
+        when(secMock.calculate(x, PRECISION)).thenReturn(secVal);
+        when(tanMock.calculate(x, PRECISION)).thenReturn(tanVal);
+
+        double actualResult = leftBranch.calculate(x, PRECISION);
+
+        assertEquals(expectedResult, actualResult, 1e10);
     }
 }

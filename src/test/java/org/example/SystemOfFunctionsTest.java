@@ -41,9 +41,7 @@ class SystemOfFunctionsTest {
         double actualResult = systemOfFunctions.calculate(x, PRECISION);
         assertEquals(expectedResult, actualResult, PRECISION);
 
-        // Проверяем, что метод calculate у левой ветви был вызван ровно 1 раз
         verify(leftBranchMock, times(1)).calculate(x, PRECISION);
-        // Проверяем, что правая ветвь вообще не вызывалась
         verify(rightBranchMock, never()).calculate(anyDouble(), anyDouble());
     }
 
@@ -58,10 +56,7 @@ class SystemOfFunctionsTest {
             systemOfFunctions.calculate(x, PRECISION);
         });
 
-        // Проверяем, что роутинг все равно сработал правильно:
-        // Система попыталась обратиться к левой ветви (которая и упала)
         verify(leftBranchMock, times(1)).calculate(x, PRECISION);
-        // А правую ветвь даже не трогала
         verify(rightBranchMock, never()).calculate(anyDouble(), anyDouble());
     }
 
@@ -71,7 +66,6 @@ class SystemOfFunctionsTest {
         double expectedResult = 0.0151;
 
         when(rightBranchMock.calculate(x, PRECISION)).thenReturn(expectedResult);
-
         double actualResult = systemOfFunctions.calculate(x, PRECISION);
 
         assertEquals(expectedResult, actualResult, PRECISION);

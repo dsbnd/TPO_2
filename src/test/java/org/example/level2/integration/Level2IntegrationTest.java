@@ -26,15 +26,12 @@ class Level2IntegrationTest {
 
     private static final double PRECISION = 1e-6;
     private static final double DELTA = 1e-5;
-
      
     @Spy
-    private SinFunction spySin = new SinFunction();   
+    private SinFunction spySin = new SinFunction();
 
-     
     private CosFunction spyCos;
 
-     
     @Mock
     private SinFunction mockSin;
 
@@ -43,11 +40,8 @@ class Level2IntegrationTest {
 
     @BeforeEach
     void setUp() {
-         
         spyCos = spy(new CosFunction(spySin));
     }
-
-     
 
     @Test
     @DisplayName("Проверка, что Csc вызывает Sin")

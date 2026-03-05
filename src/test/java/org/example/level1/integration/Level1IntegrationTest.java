@@ -25,21 +25,17 @@ class Level1IntegrationTest {
     private static final double PRECISION = 1e-6;
     private static final double DELTA = 1e-5;
 
-     
     @Spy
     private SinFunction spySin;
 
     @Spy
     private LnFunction spyLn;
 
-     
     @Mock
     private SinFunction mockSin;
 
     @Mock
     private LnFunction mockLn;
-
-     
 
     @Test
     @DisplayName("Проверка, что Cos вызывает Sin")
@@ -47,7 +43,6 @@ class Level1IntegrationTest {
         CosFunction cos = new CosFunction(spySin);
 
         cos.calculate(Math.PI / 2, PRECISION);
-
          
         verify(spySin, atLeastOnce()).calculate(anyDouble(), anyDouble());
         verify(spySin, times(1)).calculate(eq(Math.PI / 2 + Math.PI / 2), eq(PRECISION));
@@ -61,7 +56,6 @@ class Level1IntegrationTest {
         cos.calculate(0.0, PRECISION);
         cos.calculate(Math.PI / 2, PRECISION);
         cos.calculate(Math.PI, PRECISION);
-
          
         verify(spySin, times(3)).calculate(anyDouble(), anyDouble());
     }
@@ -73,12 +67,10 @@ class Level1IntegrationTest {
         double testPrecision = 1e-4;
 
         cos.calculate(1.0, testPrecision);
-
          
         verify(spySin, times(1)).calculate(anyDouble(), eq(testPrecision));
     }
 
-     
 
     @Test
     @DisplayName("Проверка, что Log2 вызывает Ln дважды")
@@ -86,11 +78,8 @@ class Level1IntegrationTest {
         LogFunction log2 = new LogFunction(spyLn, 2.0);
 
         log2.calculate(2.0, PRECISION);
-
          
         verify(spyLn, times(2)).calculate(anyDouble(), anyDouble());
-
-         
         verify(spyLn, times(2)).calculate(eq(2.0), eq(PRECISION));
     }
 
@@ -126,7 +115,6 @@ class Level1IntegrationTest {
         verify(spyLn, times(1)).calculate(eq(5.0), eq(PRECISION));
     }
 
-     
 
     @Test
     @DisplayName("Проверка Cos с Mock Sin")

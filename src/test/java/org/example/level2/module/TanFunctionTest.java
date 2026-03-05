@@ -5,6 +5,8 @@ import org.example.level2.TanFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -27,8 +29,7 @@ class TanFunctionTest {
 
     @Test
     void shouldCalculateCorrectly() {
-        double x = 1.0; 
-        // sin(x) = 0.6, cos(x) = 0.3. Тогда tan(x) = 0.6 / 0.3 = 2.0
+        double x = 1.0;
         when(sinMock.calculate(x, PRECISION)).thenReturn(0.6);
         when(cosMock.calculate(x, PRECISION)).thenReturn(0.3);
 
@@ -38,15 +39,25 @@ class TanFunctionTest {
 
     @Test
     void shouldThrowExceptionWhenCosIsZero() {
-        double x = Math.PI / 2; 
-        // Нам неважно, чему равен sin, если cos = 0, должно быть исключение
-        when(cosMock.calculate(x, PRECISION)).thenReturn(0.0);
-        
-        // Mockito lenient() используется, чтобы он не ругался, если мы не вызовем sinMock
-        // но для простоты мы просто не будем его настраивать, так как код упадет до его вызова
+        double x = 3.14 / 2;
 
+        when(cosMock.calculate(x, PRECISION)).thenReturn(0.0);
         assertThrows(ArithmeticException.class, () -> {
             tanFunction.calculate(x, PRECISION);
         });
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "0.7854, 0.7071, 0.7071, 1.0",      // pi/4: sin = cos, tan = 1
+            "-0.7854, -0.7071, 0.7071, -1.0",   // -pi/4: tan = -1
+            "0.0, 0.0, 1.0, 0.0"                // 0: sin = 0, cos = 1, tan = 0
+    })
+    void shouldCalculateCorrectlyForVariousX(double x, double sinVal, double cosVal, double expected) {
+        when(sinMock.calculate(x, PRECISION)).thenReturn(sinVal);
+        when(cosMock.calculate(x, PRECISION)).thenReturn(cosVal);
+
+        double actual = tanFunction.calculate(x, PRECISION);
+        assertEquals(expected, actual, 0.001);
     }
 }

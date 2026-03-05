@@ -5,6 +5,8 @@ import org.example.level2.SecFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -27,20 +29,32 @@ class SecFunctionTest {
     @Test
     void shouldCalculateCorrectly() {
         double x = 1.0; 
-        // Если cos(x) = 0.25, то sec(x) = 1 / 0.25 = 4.0
-        when(cosMock.calculate(x, PRECISION)).thenReturn(0.25);
 
+        when(cosMock.calculate(x, PRECISION)).thenReturn(0.25);
         double actual = secFunction.calculate(x, PRECISION);
         assertEquals(4.0, actual, PRECISION);
     }
 
     @Test
     void shouldThrowExceptionWhenCosIsZero() {
-        double x = Math.PI / 2; // Точка разрыва (cos(PI/2) = 0)
+        double x = 3.14 / 2;
         when(cosMock.calculate(x, PRECISION)).thenReturn(0.0);
 
         assertThrows(ArithmeticException.class, () -> {
             secFunction.calculate(x, PRECISION);
         });
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "0.0, 1.0, 1.0",            // 0: cos = 1, sec = 1
+            "1.0472, 0.5, 2.0",         // pi/3: cos = 0.5, sec = 2
+            "2.0944, -0.5, -2.0"        // 2*pi/3: cos = -0.5, sec = -2
+    })
+    void shouldCalculateCorrectlyForVariousX(double x, double cosVal, double expected) {
+        when(cosMock.calculate(x, PRECISION)).thenReturn(cosVal);
+
+        double actual = secFunction.calculate(x, PRECISION);
+        assertEquals(expected, actual, 0.0001);
     }
 }

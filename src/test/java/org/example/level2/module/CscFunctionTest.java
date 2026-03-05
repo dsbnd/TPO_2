@@ -5,6 +5,8 @@ import org.example.level2.CscFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -26,8 +28,7 @@ class CscFunctionTest {
 
     @Test
     void shouldCalculateCorrectly() {
-        double x = 1.0; // Значение x тут не так важно, важен мок
-        // Если sin(x) = 0.5, то csc(x) = 1 / 0.5 = 2.0
+        double x = 1.0;
         when(sinMock.calculate(x, PRECISION)).thenReturn(0.5);
 
         double actual = cscFunction.calculate(x, PRECISION);
@@ -36,11 +37,24 @@ class CscFunctionTest {
 
     @Test
     void shouldThrowExceptionWhenSinIsZero() {
-        double x = 0.0; // Точка разрыва (sin(0) = 0)
+        double x = 0.0; // Точка разрыва
         when(sinMock.calculate(x, PRECISION)).thenReturn(0.0);
 
         assertThrows(ArithmeticException.class, () -> {
             cscFunction.calculate(x, PRECISION);
         });
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1.5708, 1.0, 1.0",         // pi/2: sin = 1, csc = 1
+            "-0.5236, -0.5, -2.0",      // -pi/6: sin = -0.5, csc = -2
+            "0.5236, 0.5, 2.0"          // pi/6: sin = 0.5, csc = 2
+    })
+    void shouldCalculateCorrectlyForVariousX(double x, double sinVal, double expected) {
+        when(sinMock.calculate(x, PRECISION)).thenReturn(sinVal);
+
+        double actual = cscFunction.calculate(x, PRECISION);
+        assertEquals(expected, actual, 0.0001);
     }
 }

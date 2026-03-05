@@ -24,21 +24,17 @@ class Level0IntegrationTest {
     private static final double PRECISION = 1e-6;
     private static final double DELTA = 1e-5;
 
-
     @Spy
     private SinFunction spySin;
 
     @Spy
     private LnFunction spyLn;
 
-
     @Mock
     private SinFunction mockSin;
 
     @Mock
     private LnFunction mockLn;
-
-
 
     @Test
     @DisplayName("Проверка вызова sin с Spy")
@@ -74,11 +70,8 @@ class Level0IntegrationTest {
         assertThrows(IllegalArgumentException.class,
                 () -> spyLn.calculate(0.0, PRECISION));
 
-
         verify(spyLn, times(1)).calculate(eq(0.0), eq(PRECISION));
     }
-
-
 
     @Test
     @DisplayName("Проверка sin с Mock и заданным поведением")
@@ -88,11 +81,9 @@ class Level0IntegrationTest {
         when(mockSin.calculate(eq(0.0), anyDouble())).thenReturn(0.0);
         when(mockSin.calculate(eq(Math.PI), anyDouble())).thenReturn(0.0);
 
-
         assertEquals(1.0, mockSin.calculate(Math.PI / 2, PRECISION), DELTA);
         assertEquals(0.0, mockSin.calculate(0.0, PRECISION), DELTA);
         assertEquals(0.0, mockSin.calculate(Math.PI, PRECISION), DELTA);
-
 
         verify(mockSin, times(1)).calculate(eq(Math.PI / 2), anyDouble());
         verify(mockSin, times(1)).calculate(eq(0.0), anyDouble());
@@ -102,16 +93,13 @@ class Level0IntegrationTest {
     @Test
     @DisplayName("Проверка ln с Mock и заданным поведением")
     void shouldCalculateLnWithMock() {
-
         when(mockLn.calculate(eq(1.0), anyDouble())).thenReturn(0.0);
         when(mockLn.calculate(eq(Math.E), anyDouble())).thenReturn(1.0);
         when(mockLn.calculate(eq(2.0), anyDouble())).thenReturn(0.693147);
 
-
         assertEquals(0.0, mockLn.calculate(1.0, PRECISION), DELTA);
         assertEquals(1.0, mockLn.calculate(Math.E, PRECISION), DELTA);
         assertEquals(0.693147, mockLn.calculate(2.0, PRECISION), DELTA);
-
 
         verify(mockLn, times(1)).calculate(eq(1.0), anyDouble());
         verify(mockLn, times(1)).calculate(eq(Math.E), anyDouble());
@@ -125,7 +113,6 @@ class Level0IntegrationTest {
         when(mockLn.calculate(eq(0.0), anyDouble()))
                 .thenThrow(new IllegalArgumentException("x must be > 0"));
 
-
         assertThrows(IllegalArgumentException.class,
                 () -> mockLn.calculate(0.0, PRECISION));
 
@@ -133,17 +120,13 @@ class Level0IntegrationTest {
     }
 
 
-
     @ParameterizedTest(name = "sin({0}) = {1}")
     @DisplayName("Проверка sin с Mock для всех значений из CSV")
     @CsvFileSource(resources = "/level0/sin.csv", numLinesToSkip = 1, delimiter = ',')
     void shouldCalculateSinWithMockForAllValues(double x, double expected) {
-
         when(mockSin.calculate(eq(x), anyDouble())).thenReturn(expected);
 
-
         assertEquals(expected, mockSin.calculate(x, PRECISION), DELTA);
-
 
         verify(mockSin, times(1)).calculate(eq(x), anyDouble());
     }
@@ -154,18 +137,10 @@ class Level0IntegrationTest {
     void shouldCalculateLnWithMockForAllValues(double x, double expected) {
 
         double mockValue = expected;
-
-
         when(mockLn.calculate(eq(x), anyDouble())).thenReturn(mockValue);
-
-
         assertEquals(expected, mockLn.calculate(x, PRECISION), DELTA);
-
-
         verify(mockLn, times(1)).calculate(eq(x), anyDouble());
     }
-
-
 
     @Test
     @DisplayName("Проверка, что sin и ln не влияют друг на друга")
@@ -174,10 +149,8 @@ class Level0IntegrationTest {
         spySin.calculate(Math.PI / 2, PRECISION);
         spyLn.calculate(2.0, PRECISION);
 
-
         verify(spySin, times(1)).calculate(anyDouble(), anyDouble());
         verify(spyLn, times(1)).calculate(anyDouble(), anyDouble());
-
 
         verify(spySin, never()).calculate(eq(2.0), anyDouble());
         verify(spyLn, never()).calculate(eq(Math.PI / 2), anyDouble());
@@ -191,7 +164,6 @@ class Level0IntegrationTest {
         spySin.calculate(Math.PI / 2, PRECISION);
         spyLn.calculate(1.0, PRECISION);
         spyLn.calculate(2.0, PRECISION);
-
 
         InOrder inOrder = inOrder(spySin, spyLn);
 
