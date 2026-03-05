@@ -1,7 +1,8 @@
-package org.example.level1;
+package org.example.level1.module;
 
 import org.example.level0.MathFunction;
 import org.example.level0.SinFunction;
+import org.example.level1.CosFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
