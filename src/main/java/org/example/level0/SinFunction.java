@@ -3,6 +3,9 @@ package org.example.level0;
 public class SinFunction implements MathFunction {
     @Override
     public double calculate(double x, double precision) {
+        if (Double.isNaN(x) || Double.isInfinite(x)) {
+            throw new IllegalArgumentException("x must be a finite number");
+        }
         // Приводим x к периоду [-PI, PI] для точности вычислений
         x = x % (2 * Math.PI);
         if (x < -Math.PI) x += 2 * Math.PI;
