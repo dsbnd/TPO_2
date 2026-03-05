@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,5 +42,21 @@ class LeftBranchFunctionTest {
         double actualResult = leftBranch.calculate(x, PRECISION);
         double expectedResult = 5.75928e11;
         assertEquals(expectedResult, actualResult, 1e7);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenSecThrowsException() {
+        double x = -3.14 / 2; // Точка, где косинус равен нулю
+
+        // Имитируем, что при попытке посчитать секанс вылетает ошибка деления на ноль
+        when(secMock.calculate(x, PRECISION)).thenThrow(new ArithmeticException("Division by zero in SecFunction"));
+
+        // Можем настроить и другие моки, но это необязательно,
+        // так как при вызове sec.calculate() внутри левой ветки выполнение прервется
+
+        // Проверяем, что левая ветка тоже упала с ArithmeticException
+        assertThrows(ArithmeticException.class, () -> {
+            leftBranch.calculate(x, PRECISION);
+        });
     }
 }
