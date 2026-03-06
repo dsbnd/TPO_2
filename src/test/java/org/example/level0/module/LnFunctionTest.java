@@ -14,6 +14,7 @@ class LnFunctionTest {
     private LnFunction lnFunction;
     private static final double PRECISION = 1e-6;
     private static final double DELTA = 1e-5;
+    private static final double E =2.71828182845904523536028747;
 
     @BeforeEach
     void setUp() {
@@ -27,7 +28,7 @@ class LnFunctionTest {
 
     @Test
     void testLnE() {
-        assertEquals(1.0, lnFunction.calculate(Math.E, PRECISION), PRECISION);
+        assertEquals(1.0, lnFunction.calculate(E, PRECISION), PRECISION);
     }
 
     @ParameterizedTest(name = "ln({0}) = {1}")

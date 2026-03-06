@@ -26,7 +26,8 @@ class Level2IntegrationTest {
 
     private static final double PRECISION = 1e-6;
     private static final double DELTA = 1e-5;
-     
+    private static final double PI = 3.1415926535897932384626433;
+
     @Spy
     private SinFunction spySin = new SinFunction();
 
@@ -47,21 +48,21 @@ class Level2IntegrationTest {
     @DisplayName("Проверка, что Csc вызывает Sin")
     void shouldCallSinWhenCalculatingCsc() {
         CscFunction csc = new CscFunction(spySin);
-        csc.calculate(Math.PI / 6, PRECISION);
+        csc.calculate( PI/ 6, PRECISION);
 
         verify(spySin, times(1)).calculate(anyDouble(), anyDouble());
-        verify(spySin, times(1)).calculate(eq(Math.PI / 6), eq(PRECISION));
+        verify(spySin, times(1)).calculate(eq( PI/ 6), eq(PRECISION));
     }
 
     @Test
     @DisplayName("Проверка Csc с Mock Sin")
     void shouldCalculateCscWithMockSin() {
-        when(mockSin.calculate(eq(Math.PI / 6), anyDouble())).thenReturn(0.5);
+        when(mockSin.calculate(eq( PI/ 6), anyDouble())).thenReturn(0.5);
 
         CscFunction csc = new CscFunction(mockSin);
-        assertEquals(2.0, csc.calculate(Math.PI / 6, PRECISION), DELTA);
+        assertEquals(2.0, csc.calculate( PI/ 6, PRECISION), DELTA);
 
-        verify(mockSin, times(1)).calculate(eq(Math.PI / 6), anyDouble());
+        verify(mockSin, times(1)).calculate(eq( PI/ 6), anyDouble());
     }
 
 
@@ -107,11 +108,11 @@ class Level2IntegrationTest {
     @Test
     @DisplayName("Проверка обработки исключений в Sec")
     void shouldThrowExceptionWhenTanIsZero() {
-        when(mockCos.calculate(eq(Math.PI / 2), anyDouble())).thenReturn(0.0);
+        when(mockCos.calculate(eq( PI/ 2), anyDouble())).thenReturn(0.0);
 
         SecFunction sec = new SecFunction(mockCos);
         assertThrows(ArithmeticException.class,
-                () -> sec.calculate(Math.PI / 2, PRECISION));
+                () -> sec.calculate( PI/ 2, PRECISION));
     }
 
      
@@ -120,7 +121,7 @@ class Level2IntegrationTest {
     @DisplayName("Проверка, что Tan вызывает Sin и Cos")
     void shouldCallSinAndCosWhenCalculatingTan() {
         TanFunction tan = new TanFunction(spySin, spyCos);
-        tan.calculate(Math.PI / 4, PRECISION);
+        tan.calculate( PI/ 4, PRECISION);
 
          
          
@@ -129,31 +130,31 @@ class Level2IntegrationTest {
         verify(spySin, times(2)).calculate(anyDouble(), anyDouble());   
         verify(spyCos, times(1)).calculate(anyDouble(), anyDouble());
 
-        verify(spySin, times(1)).calculate(eq(Math.PI / 4), eq(PRECISION));   
-        verify(spyCos, times(1)).calculate(eq(Math.PI / 4), eq(PRECISION));
+        verify(spySin, times(1)).calculate(eq( PI/ 4), eq(PRECISION));   
+        verify(spyCos, times(1)).calculate(eq( PI/ 4), eq(PRECISION));
     }
 
     @Test
     @DisplayName("Проверка Tan с Mock Sin и Cos")
     void shouldCalculateTanWithMocks() {
-        when(mockSin.calculate(eq(Math.PI / 4), anyDouble())).thenReturn(0.70710678);
-        when(mockCos.calculate(eq(Math.PI / 4), anyDouble())).thenReturn(0.70710678);
+        when(mockSin.calculate(eq( PI/ 4), anyDouble())).thenReturn(0.70710678);
+        when(mockCos.calculate(eq( PI/ 4), anyDouble())).thenReturn(0.70710678);
 
         TanFunction tan = new TanFunction(mockSin, mockCos);
-        assertEquals(1.0, tan.calculate(Math.PI / 4, PRECISION), DELTA);
+        assertEquals(1.0, tan.calculate( PI/ 4, PRECISION), DELTA);
 
-        verify(mockSin, times(1)).calculate(eq(Math.PI / 4), anyDouble());
-        verify(mockCos, times(1)).calculate(eq(Math.PI / 4), anyDouble());
+        verify(mockSin, times(1)).calculate(eq( PI/ 4), anyDouble());
+        verify(mockCos, times(1)).calculate(eq( PI/ 4), anyDouble());
     }
 
     @Test
     @DisplayName("Проверка обработки исключений в Tan")
     void shouldThrowExceptionWhenCosIsZero() {
-        when(mockCos.calculate(eq(Math.PI / 2), anyDouble())).thenReturn(0.0);
+        when(mockCos.calculate(eq( PI/ 2), anyDouble())).thenReturn(0.0);
 
         TanFunction tan = new TanFunction(mockSin, mockCos);
         assertThrows(ArithmeticException.class,
-                () -> tan.calculate(Math.PI / 2, PRECISION));
+                () -> tan.calculate( PI/ 2, PRECISION));
     }
 
      
@@ -165,9 +166,9 @@ class Level2IntegrationTest {
         SecFunction sec = new SecFunction(spyCos);
         TanFunction tan = new TanFunction(spySin, spyCos);
 
-        csc.calculate(Math.PI / 6, PRECISION);   
+        csc.calculate( PI/ 6, PRECISION);   
         sec.calculate(0.0, PRECISION);           
-        tan.calculate(Math.PI / 4, PRECISION);   
+        tan.calculate( PI/ 4, PRECISION);   
 
          
         verify(spySin, times(4)).calculate(anyDouble(), anyDouble());
@@ -192,7 +193,7 @@ class Level2IntegrationTest {
     @Test
     @DisplayName("Проверка полной цепочки вызовов для Tan")
     void shouldVerifyFullChainForTan() {
-        double x = Math.PI / 4;
+        double x =  PI/ 4;
         TanFunction tan = new TanFunction(spySin, spyCos);
         tan.calculate(x, PRECISION);
 
@@ -204,7 +205,7 @@ class Level2IntegrationTest {
 
          
          
-        inOrder.verify(spySin).calculate(eq(x + Math.PI / 2, 1e-9), eq(PRECISION, 1e-9));
+        inOrder.verify(spySin).calculate(eq(x +  PI/ 2, 1e-9), eq(PRECISION, 1e-9));
 
          
         inOrder.verify(spySin).calculate(eq(x, 1e-9), eq(PRECISION, 1e-9));

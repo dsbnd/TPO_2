@@ -24,7 +24,7 @@ class Level1IntegrationTest {
 
     private static final double PRECISION = 1e-6;
     private static final double DELTA = 1e-5;
-
+    private static final double PI = 3.1415926535897932384626433;
     @Spy
     private SinFunction spySin;
 
@@ -42,10 +42,10 @@ class Level1IntegrationTest {
     void shouldCallSinWhenCalculatingCos() {
         CosFunction cos = new CosFunction(spySin);
 
-        cos.calculate(Math.PI / 2, PRECISION);
+        cos.calculate( PI / 2, PRECISION);
          
         verify(spySin, atLeastOnce()).calculate(anyDouble(), anyDouble());
-        verify(spySin, times(1)).calculate(eq(Math.PI / 2 + Math.PI / 2), eq(PRECISION));
+        verify(spySin, times(1)).calculate(eq( PI / 2 +  PI / 2), eq(PRECISION));
     }
 
     @Test
@@ -54,8 +54,8 @@ class Level1IntegrationTest {
         CosFunction cos = new CosFunction(spySin);
 
         cos.calculate(0.0, PRECISION);
-        cos.calculate(Math.PI / 2, PRECISION);
-        cos.calculate(Math.PI, PRECISION);
+        cos.calculate( PI / 2, PRECISION);
+        cos.calculate( PI, PRECISION);
          
         verify(spySin, times(3)).calculate(anyDouble(), anyDouble());
     }
@@ -120,17 +120,17 @@ class Level1IntegrationTest {
     @DisplayName("Проверка Cos с Mock Sin")
     void shouldCalculateCosWithMockSin() {
          
-        when(mockSin.calculate(eq(Math.PI / 2), anyDouble())).thenReturn(1.0);
+        when(mockSin.calculate(eq( PI / 2), anyDouble())).thenReturn(1.0);
          
-        when(mockSin.calculate(eq(Math.PI), anyDouble())).thenReturn(0.0);
+        when(mockSin.calculate(eq( PI), anyDouble())).thenReturn(0.0);
 
         CosFunction cos = new CosFunction(mockSin);
 
         assertEquals(1.0, cos.calculate(0.0, PRECISION), DELTA);
-        assertEquals(0.0, cos.calculate(Math.PI / 2, PRECISION), DELTA);
+        assertEquals(0.0, cos.calculate( PI / 2, PRECISION), DELTA);
 
-        verify(mockSin, times(1)).calculate(eq(Math.PI / 2), anyDouble());
-        verify(mockSin, times(1)).calculate(eq(Math.PI), anyDouble());
+        verify(mockSin, times(1)).calculate(eq( PI / 2), anyDouble());
+        verify(mockSin, times(1)).calculate(eq( PI), anyDouble());
     }
 
     @ParameterizedTest(name = "cos({0}) = {1} with mock")
@@ -138,9 +138,9 @@ class Level1IntegrationTest {
     @CsvFileSource(resources = "/level1/cos.csv", numLinesToSkip = 1, delimiter = ',')
     void shouldCalculateCosWithMockForAllValues(double x, double expected) {
          
-        double sinArg = x + Math.PI / 2;
+        double sinArg = x +  PI / 2;
 
-         
+
         when(mockSin.calculate(eq(sinArg), anyDouble())).thenReturn(expected);
 
         CosFunction cos = new CosFunction(mockSin);

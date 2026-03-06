@@ -29,7 +29,7 @@ class Level3IntegrationTest {
 
     private static final double PRECISION = 1e-6;
     private static final double DELTA = 1e-4;
-
+    private static final double PI = 3.1415926535897932384626433;
      
     @Spy
     private SinFunction spySin = new SinFunction();
@@ -150,9 +150,9 @@ class Level3IntegrationTest {
         assertThrows(ArithmeticException.class,
                 () -> leftBranch.calculate(0.0, PRECISION));
         assertThrows(ArithmeticException.class,
-                () -> leftBranch.calculate(-Math.PI, PRECISION));
+                () -> leftBranch.calculate(- PI, PRECISION));
         assertThrows(ArithmeticException.class,
-                () -> leftBranch.calculate(-Math.PI / 2, PRECISION));
+                () -> leftBranch.calculate(- PI / 2, PRECISION));
     }
 
      

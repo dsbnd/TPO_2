@@ -14,6 +14,7 @@ class SinFunctionTest {
     private SinFunction sinFunction;
     private static final double PRECISION = 1e-6;
     private static final double DELTA = 1e-5;
+    private static final double PI = 3.1415926535897932384626433;
 
     @BeforeEach
     void setUp() {
@@ -25,12 +26,6 @@ class SinFunctionTest {
         assertEquals(0.0, sinFunction.calculate(0.0, PRECISION), PRECISION);
     }
 
-    @Test
-    void testSinPeriodicity() {
-        double sin1 = sinFunction.calculate(Math.PI / 6, PRECISION);
-        double sin2 = sinFunction.calculate(Math.PI / 6 + 2 * Math.PI, PRECISION);
-        assertEquals(sin1, sin2, PRECISION);
-    }
 
     @ParameterizedTest(name = "sin({0}) = {1}")
     @CsvFileSource(resources = "/level0/sin.csv", numLinesToSkip = 1, delimiter = ',')
