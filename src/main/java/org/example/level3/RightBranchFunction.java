@@ -26,7 +26,7 @@ public class RightBranchFunction implements MathFunction {
         double log10X = log10.calculate(x, precision);
 
         if (Math.abs(log5X) < precision) {
-            throw new ArithmeticException("Division by zero: log5(x) is 0");
+            throw new ArithmeticException("Деление на ноль: log5(x) это 0");
         }
 
         // (((ln(x) - log_10(x)) + log_2(x)) * ln(x)) * log_3(x)
@@ -35,7 +35,7 @@ public class RightBranchFunction implements MathFunction {
         // (log_2(x)^3) / (log_5(x)^3)
         double denominator = Math.pow(log2X, 3) / Math.pow(log5X, 3);
         if (Math.abs(denominator) < precision) {
-            throw new ArithmeticException("Division by zero: main denominator is 0");
+            throw new ArithmeticException("Деление на ноль: main denominator is 0");
         }
         return numerator / denominator;
     }

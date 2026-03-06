@@ -14,7 +14,6 @@ class SinFunctionTest {
     private SinFunction sinFunction;
     private static final double PRECISION = 1e-6;
     private static final double DELTA = 1e-5;
-    private static final double PI = 3.1415926535897932384626433;
 
     @BeforeEach
     void setUp() {

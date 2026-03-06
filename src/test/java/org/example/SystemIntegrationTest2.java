@@ -2,7 +2,6 @@ package org.example;
 
 import org.example.level0.LnFunction;
 import org.example.level0.SinFunction;
-import org.example.level0.MathFunction;
 import org.example.level1.CosFunction;
 import org.example.level1.LogFunction;
 import org.example.level2.CscFunction;
@@ -14,8 +13,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvFileSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -24,15 +21,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class SystemIntegrationTest2 {
 
     private static final double PRECISION = 0.0001;
@@ -55,6 +48,7 @@ class SystemIntegrationTest2 {
     private RightBranchFunction rightBranch;
 
     private SystemOfFunctions system;
+
 
     private static Map<Double, Double> sinValues = new HashMap<>();
     private static Map<Double, Double> cosValues = new HashMap<>();
@@ -82,6 +76,24 @@ class SystemIntegrationTest2 {
         loadCsvValues("src/test/resources/log10_values.csv", log10Values);
         loadCsvValues("src/test/resources/system_expected.csv", systemExpectedValues);
 
+        System.out.println("Загружено значений:");
+        System.out.println("  sin: " + sinValues.size());
+        System.out.println("  cos: " + cosValues.size());
+        System.out.println("  tan: " + tanValues.size());
+        System.out.println("  csc: " + cscValues.size());
+        System.out.println("  sec: " + secValues.size());
+        System.out.println("  ln: " + lnValues.size());
+        System.out.println("  log2: " + log2Values.size());
+        System.out.println("  log3: " + log3Values.size());
+        System.out.println("  log5: " + log5Values.size());
+        System.out.println("  log10: " + log10Values.size());
+        System.out.println("  system: " + systemExpectedValues.size());
+
+
+        System.out.println("\nПервые 5 значений system:");
+        systemExpectedValues.entrySet().stream()
+                .limit(5)
+                .forEach(e -> System.out.println("  x=" + e.getKey() + ", y=" + e.getValue()));
     }
 
     private static void loadCsvValues(String filePath, Map<Double, Double> map) throws IOException {
@@ -108,6 +120,7 @@ class SystemIntegrationTest2 {
                     }
                 }
             }
+            System.out.println("Загружено " + count + " значений из " + filePath);
         }
     }
 
@@ -136,57 +149,35 @@ class SystemIntegrationTest2 {
 
     @Test
     void testAllPointsWithMocks() {
+
         for (Map.Entry<Double, Double> entry : systemExpectedValues.entrySet()) {
             double x = entry.getKey();
             double expected = entry.getValue();
-
             try {
                 if (x < 0) {
-                    Double sinValObj = sinValues.get(x);
-                    if (sinValObj == null) {
-                        fail("В sin_values.csv не найдено значение для x=" + x);
-                    }
-                    double sinVal = sinValObj;
 
+                    double sinVal = sinValues.get(x);
                     double xPlusPiOver2 = x + Math.PI / 2;
-
-                    // Берем косинус из мапы, а если его там нет — считаем на лету
-                    Double sinValPlusObj = cosValues.get(x);
-                    double sinValPlus = (sinValPlusObj != null) ? sinValPlusObj : Math.cos(x);
-
+                    double sinValPlus = sinValues.get(xPlusPiOver2);
                     if (sinVal == 0 && (Math.abs(x) % Math.PI == 0)) {
-                        // Особые точки
                         when(mockSin.calculate(eq(x), eq(PRECISION))).thenReturn(sinVal);
                         when(mockSin.calculate(eq(xPlusPiOver2), eq(PRECISION))).thenReturn(sinValPlus);
                         assertThrows(ArithmeticException.class, () -> system.calculate(x, PRECISION));
                     } else {
                         when(mockSin.calculate(eq(x), eq(PRECISION))).thenReturn(sinVal);
                         when(mockSin.calculate(eq(xPlusPiOver2), eq(PRECISION))).thenReturn(sinValPlus);
-
                         double actual = system.calculate(x, PRECISION);
                         assertEquals(expected, actual, DELTA, "Несовпадение при x = " + x);
                     }
 
                 } else if (x > 0) {
-                    Double lnValObj = lnValues.get(x);
-                    if (lnValObj == null) {
-                        fail("В ln_values.csv не найдено значение для x=" + x);
-                    }
-                    double lnVal = lnValObj;
-
-                    Double ln2Obj = lnValues.get(2.0);
-                    double ln2 = (ln2Obj != null) ? ln2Obj : Math.log(2.0);
-
-                    Double ln3Obj = lnValues.get(3.0);
-                    double ln3 = (ln3Obj != null) ? ln3Obj : Math.log(3.0);
-
-                    Double ln5Obj = lnValues.get(5.0);
-                    double ln5 = (ln5Obj != null) ? ln5Obj : Math.log(5.0);
-
-                    Double ln10Obj = lnValues.get(10.0);
-                    double ln10 = (ln10Obj != null) ? ln10Obj : Math.log(10.0);
-
+                    double lnVal = lnValues.get(x);
+                    double ln2 = lnValues.get(2.0);
+                    double ln3 = lnValues.get(3.0);
+                    double ln5 = lnValues.get(5.0);
+                    double ln10 = lnValues.get(10.0);
                     if (x == 1.0) {
+
                         when(mockLn.calculate(eq(x), eq(PRECISION))).thenReturn(0.0);
                         when(mockLn.calculate(eq(2.0), eq(PRECISION))).thenReturn(ln2);
                         when(mockLn.calculate(eq(3.0), eq(PRECISION))).thenReturn(ln3);
@@ -202,8 +193,7 @@ class SystemIntegrationTest2 {
                         when(mockLn.calculate(eq(10.0), eq(PRECISION))).thenReturn(ln10);
 
                         double actual = system.calculate(x, PRECISION);
-
-                        assertEquals(expected, actual, 0.05, "Несовпадение при x = " + x);
+                        assertEquals(expected, actual, DELTA, "Несовпадение при x = " + x);
                     }
                 }
             } catch (Exception e) {

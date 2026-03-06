@@ -3,6 +3,7 @@ package org.example.level3.module;
 import org.example.level0.MathFunction;
 import org.example.level3.LeftBranchFunction;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,6 +33,7 @@ class LeftBranchFunctionTest {
     }
 
     @Test
+    @DisplayName("Проверка на корректное вычисление левой функции")
     void shouldCalculateCorrectlyForMinusPiOver4() {
         double x = -0.7853; // -пи/4
 
@@ -47,6 +49,7 @@ class LeftBranchFunctionTest {
     }
 
     @Test
+    @DisplayName("Проверка на выброс исключений левой функции (sec)")
     void shouldThrowExceptionWhenSecThrowsException() {
         double x = -3.14 / 2; //точка, в кот косинус равен нулю
 
@@ -57,6 +60,7 @@ class LeftBranchFunctionTest {
     }
 
     @Test
+    @DisplayName("Проверка на выброс исключений левой функции (csc)")
     void shouldThrowExceptionWhenCscThrowsException() {
         double x = 0.0;
         when(cscMock.calculate(x, PRECISION)).thenThrow(new ArithmeticException("Division by zero in CscFunction"));
@@ -67,6 +71,7 @@ class LeftBranchFunctionTest {
     }
 
     @ParameterizedTest
+    @DisplayName("Параметризованный тест для левой функции")
     @CsvSource({
             //-пи/12 (-0.2618)
             "-0.2618, -0.258819, 0.965926, -3.863703, 1.035276, -0.267949, 5.7165944405101744e26",

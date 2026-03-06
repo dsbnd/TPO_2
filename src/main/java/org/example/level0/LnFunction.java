@@ -1,13 +1,18 @@
 package org.example.level0;
 
+    /**
+     Функция 0 уровня натурального логарифма
+     */
+
 public class LnFunction implements MathFunction {
+
     @Override
     public double calculate(double x, double precision) {
         if (Double.isNaN(x) || Double.isInfinite(x)) {
-            throw new IllegalArgumentException("x must be a finite number");
+            throw new IllegalArgumentException("x должен быть конечным числом");
         }
         if (x <= 0) {
-            throw new IllegalArgumentException("x must be > 0");
+            throw new IllegalArgumentException("x должен быть > 0");
         }
 
         if (Math.abs(x - 1) <= 0.1) {
@@ -18,7 +23,9 @@ public class LnFunction implements MathFunction {
             return calculateScaled(x, precision);
         }
     }
-
+        /**
+            Вычисление вблизи 1, сходимость быстрая
+         */
     private double calculateNearOne(double x, double precision) {
         double y = x - 1;
         double term = y;
@@ -32,7 +39,9 @@ public class LnFunction implements MathFunction {
         }
         return sum;
     }
-
+        /**
+         Вычисление масштабируемого значения, чтобы достигалась погрешность и сходимость
+         */
     private double calculateScaled(double x, double precision) {
         int k = 0;
         double scaledX = x;

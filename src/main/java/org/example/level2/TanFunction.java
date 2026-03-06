@@ -15,7 +15,7 @@ public class TanFunction implements MathFunction {
     public double calculate(double x, double precision) {
         double cosVal = cosFunction.calculate(x, precision);
         if (Math.abs(cosVal) < precision) {
-            throw new ArithmeticException("Division by zero in TanFunction");
+            throw new ArithmeticException("Деление на ноль в функции TanFunction");
         }
         return sinFunction.calculate(x, precision) / cosVal;
     }

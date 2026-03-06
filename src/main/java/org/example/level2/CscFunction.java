@@ -13,7 +13,7 @@ public class CscFunction implements MathFunction {
     public double calculate(double x, double precision) {
         double sinVal = sinFunction.calculate(x, precision);
         if (Math.abs(sinVal) < precision) {
-            throw new ArithmeticException("Division by zero in CscFunction");
+            throw new ArithmeticException("Деление на ноль в функции CscFunction");
         }
         return 1.0 / sinVal;
     }

@@ -3,6 +3,7 @@ package org.example.level2.module;
 import org.example.level0.MathFunction;
 import org.example.level2.CscFunction;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,6 +28,7 @@ class CscFunctionTest {
     }
 
     @Test
+    @DisplayName("Проверка на корректное вычисление функции csc")
     void shouldCalculateCorrectly() {
         double x = 1.0;
         when(sinMock.calculate(x, PRECISION)).thenReturn(0.5);
@@ -36,6 +38,7 @@ class CscFunctionTest {
     }
 
     @Test
+    @DisplayName("Проверка на выброс исключений функции csc")
     void shouldThrowExceptionWhenSinIsZero() {
         double x = 0.0; // Точка разрыва
         when(sinMock.calculate(x, PRECISION)).thenReturn(0.0);
@@ -46,6 +49,7 @@ class CscFunctionTest {
     }
 
     @ParameterizedTest
+    @DisplayName("Параметризованный тест функции csc")
     @CsvSource({
             "1.5708, 1.0, 1.0",         // pi/2: sin = 1, csc = 1
             "-0.5236, -0.5, -2.0",      // -pi/6: sin = -0.5, csc = -2

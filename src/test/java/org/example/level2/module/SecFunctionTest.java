@@ -3,6 +3,7 @@ package org.example.level2.module;
 import org.example.level0.MathFunction;
 import org.example.level2.SecFunction;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,6 +28,7 @@ class SecFunctionTest {
     }
 
     @Test
+    @DisplayName("Проверка на корректное вычисление функции sec")
     void shouldCalculateCorrectly() {
         double x = 1.0; 
 
@@ -36,6 +38,7 @@ class SecFunctionTest {
     }
 
     @Test
+    @DisplayName("Проверка на выброс исключений функции sec")
     void shouldThrowExceptionWhenCosIsZero() {
         double x = 3.14 / 2;
         when(cosMock.calculate(x, PRECISION)).thenReturn(0.0);
@@ -46,6 +49,7 @@ class SecFunctionTest {
     }
 
     @ParameterizedTest
+    @DisplayName("Параметризованный тест функции sec")
     @CsvSource({
             "0.0, 1.0, 1.0",            // 0: cos = 1, sec = 1
             "1.0472, 0.5, 2.0",         // pi/3: cos = 0.5, sec = 2

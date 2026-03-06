@@ -13,7 +13,7 @@ public class SecFunction implements MathFunction {
     public double calculate(double x, double precision) {
         double cosVal = cosFunction.calculate(x, precision);
         if (Math.abs(cosVal) < precision) {
-            throw new ArithmeticException("Division by zero in SecFunction");
+            throw new ArithmeticException("Деление на ноль в функции SecFunction");
         }
         return 1.0 / cosVal;
     }

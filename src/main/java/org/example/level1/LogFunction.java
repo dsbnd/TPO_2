@@ -8,7 +8,7 @@ public class LogFunction implements MathFunction {
 
     public LogFunction(MathFunction lnFunction, double base) {
         if (base <= 0 || base == 1 || Double.isNaN(base) || Double.isInfinite(base)) {
-            throw new IllegalArgumentException("Base must be > 0 and != 1");
+            throw new IllegalArgumentException("Основание должно быть > 0 and != 1");
         }
         this.lnFunction = lnFunction;
         this.base = base;
@@ -22,7 +22,7 @@ public class LogFunction implements MathFunction {
 
     private void validateX(double x) {
         if (x <= 0 || Double.isNaN(x) || Double.isInfinite(x)) {
-            throw new IllegalArgumentException("x must be > 0");
+            throw new IllegalArgumentException("x должно быть > 0");
         }
     }
 

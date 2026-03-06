@@ -3,6 +3,7 @@ package org.example.level3.module;
 import org.example.level0.MathFunction;
 import org.example.level3.RightBranchFunction;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,6 +33,7 @@ class RightBranchFunctionTest {
     }
 
     @Test
+    @DisplayName("Проверка на корректное вычисление правой функции")
     void shouldCalculateCorrectlyForXEquals2() {
         double x = 2.0;
 
@@ -48,6 +50,7 @@ class RightBranchFunctionTest {
     }
 
     @Test
+    @DisplayName("Проверка на выброс исключений правой функции,log5=0")
     void shouldThrowExceptionWhenLog5IsZero() {
         double x = 1.0;
 
@@ -63,6 +66,7 @@ class RightBranchFunctionTest {
     }
 
     @Test
+    @DisplayName("Проверка на правильное вычисление в особой точке равной 0, в правой функции")
     void shouldCalculateCorrectlyForXInZeroToOneInterval() {
         double x = 0.5;
 
@@ -79,6 +83,7 @@ class RightBranchFunctionTest {
     }
 
     @ParameterizedTest
+    @DisplayName("Параметризованный тест для правой функции")
     @CsvSource({
             "0.001, -6.907755, -3.000000, -9.965784, -6.287712, -4.292032, -48.1362" //граничное значение
     })

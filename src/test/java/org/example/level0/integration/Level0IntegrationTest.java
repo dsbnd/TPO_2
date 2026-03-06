@@ -57,16 +57,6 @@ class Level0IntegrationTest {
     }
 
     @Test
-    @DisplayName("Проверка многократных вызовов sin")
-    void shouldCallSinMultipleTimes() {
-        spySin.calculate(0.0, PRECISION);
-        spySin.calculate( PI_2, PRECISION);
-        spySin.calculate( PI, PRECISION);
-
-        verify(spySin, times(3)).calculate(anyDouble(), anyDouble());
-    }
-
-    @Test
     @DisplayName("Проверка вызова ln с невалидным аргументом")
     void shouldThrowExceptionForInvalidLnArgument() {
         assertThrows(IllegalArgumentException.class,

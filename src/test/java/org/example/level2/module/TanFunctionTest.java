@@ -3,6 +3,7 @@ package org.example.level2.module;
 import org.example.level0.MathFunction;
 import org.example.level2.TanFunction;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,6 +29,7 @@ class TanFunctionTest {
     }
 
     @Test
+    @DisplayName("Проверка на корректное вычисление функции tan")
     void shouldCalculateCorrectly() {
         double x = 1.0;
         when(sinMock.calculate(x, PRECISION)).thenReturn(0.6);
@@ -38,6 +40,7 @@ class TanFunctionTest {
     }
 
     @Test
+    @DisplayName("Проверка на выброс исключений функции tan")
     void shouldThrowExceptionWhenCosIsZero() {
         double x = 3.14 / 2;
 
@@ -48,6 +51,7 @@ class TanFunctionTest {
     }
 
     @ParameterizedTest
+    @DisplayName("Параметризованный тест функции tan")
     @CsvSource({
             "0.7854, 0.7071, 0.7071, 1.0",      // pi/4: sin = cos, tan = 1
             "-0.7854, -0.7071, 0.7071, -1.0",   // -pi/4: tan = -1

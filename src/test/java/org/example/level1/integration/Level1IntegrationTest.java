@@ -18,7 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-
+/**
+ * Интеграционный тест 1 уровня, показывает правильность вызовов и их последовательность
+ */
 @ExtendWith(MockitoExtension.class)
 class Level1IntegrationTest {
 
