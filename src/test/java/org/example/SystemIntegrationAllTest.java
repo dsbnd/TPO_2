@@ -31,13 +31,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-class SystemIntegrationTest2 {
-
+class SystemIntegrationAllTest {
 
     private SystemOfFunctions system;
 
     private static final double PRECISION = 0.0001;
-
 
     @BeforeEach
 
@@ -64,7 +62,7 @@ class SystemIntegrationTest2 {
 
 
     @ParameterizedTest
-    @CsvFileSource(resources = "/all_results.csv", numLinesToSkip = 1)
+    @CsvFileSource(resources = "/all_results.csv", numLinesToSkip = 1, delimiter = ';')
     void shouldCalculateEntireSystemCorrectly(double x, double expectedResult) {
 
         if (Double.isNaN(expectedResult)) {

@@ -14,10 +14,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvFileSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -26,14 +26,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class SystemIntegrationTest2 {
+class IntegrationTest {
 
     private static final double PRECISION = 0.0001;
     private static final double DELTA = 1e-4;
@@ -81,14 +79,12 @@ class SystemIntegrationTest2 {
         loadCsvValues("src/test/resources/log5_values.csv", log5Values);
         loadCsvValues("src/test/resources/log10_values.csv", log10Values);
         loadCsvValues("src/test/resources/system_expected.csv", systemExpectedValues);
-
     }
 
     private static void loadCsvValues(String filePath, Map<Double, Double> map) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             reader.readLine();
-            int count = 0;
 
             while ((line = reader.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;
@@ -101,7 +97,6 @@ class SystemIntegrationTest2 {
 
                         if (!"NaN".equals(yStr)) {
                             map.put(x, Double.parseDouble(yStr));
-                            count++;
                         }
                     } catch (NumberFormatException e) {
                         System.err.println("Ошибка парсинга в файле " + filePath + ": " + line);
@@ -140,74 +135,49 @@ class SystemIntegrationTest2 {
             double x = entry.getKey();
             double expected = entry.getValue();
 
-            try {
-                if (x < 0) {
-                    Double sinValObj = sinValues.get(x);
-                    if (sinValObj == null) {
-                        fail("В sin_values.csv не найдено значение для x=" + x);
-                    }
-                    double sinVal = sinValObj;
+            if (x < 0) {
+                double sinVal = sinValues.get(x);
+                double xPlusPiOver2 = x + Math.PI / 2;
+                double sinValPlus = cosValues.get(x);
 
-                    double xPlusPiOver2 = x + Math.PI / 2;
+                if (sinVal == 0 && (Math.abs(x) % Math.PI == 0)) {
+                    when(mockSin.calculate(x, PRECISION)).thenReturn(sinVal);
+                    when(mockSin.calculate(xPlusPiOver2, PRECISION)).thenReturn(sinValPlus);
 
-                    // Берем косинус из мапы, а если его там нет — считаем на лету
-                    Double sinValPlusObj = cosValues.get(x);
-                    double sinValPlus = (sinValPlusObj != null) ? sinValPlusObj : Math.cos(x);
+                    assertThrows(ArithmeticException.class, () -> system.calculate(x, PRECISION));
+                } else {
+                    when(mockSin.calculate(x,PRECISION)).thenReturn(sinVal);
+                    when(mockSin.calculate(xPlusPiOver2, PRECISION)).thenReturn(sinValPlus);
 
-                    if (sinVal == 0 && (Math.abs(x) % Math.PI == 0)) {
-                        // Особые точки
-                        when(mockSin.calculate(eq(x), eq(PRECISION))).thenReturn(sinVal);
-                        when(mockSin.calculate(eq(xPlusPiOver2), eq(PRECISION))).thenReturn(sinValPlus);
-                        assertThrows(ArithmeticException.class, () -> system.calculate(x, PRECISION));
-                    } else {
-                        when(mockSin.calculate(eq(x), eq(PRECISION))).thenReturn(sinVal);
-                        when(mockSin.calculate(eq(xPlusPiOver2), eq(PRECISION))).thenReturn(sinValPlus);
-
-                        double actual = system.calculate(x, PRECISION);
-                        assertEquals(expected, actual, DELTA, "Несовпадение при x = " + x);
-                    }
-
-                } else if (x > 0) {
-                    Double lnValObj = lnValues.get(x);
-                    if (lnValObj == null) {
-                        fail("В ln_values.csv не найдено значение для x=" + x);
-                    }
-                    double lnVal = lnValObj;
-
-                    Double ln2Obj = lnValues.get(2.0);
-                    double ln2 = (ln2Obj != null) ? ln2Obj : Math.log(2.0);
-
-                    Double ln3Obj = lnValues.get(3.0);
-                    double ln3 = (ln3Obj != null) ? ln3Obj : Math.log(3.0);
-
-                    Double ln5Obj = lnValues.get(5.0);
-                    double ln5 = (ln5Obj != null) ? ln5Obj : Math.log(5.0);
-
-                    Double ln10Obj = lnValues.get(10.0);
-                    double ln10 = (ln10Obj != null) ? ln10Obj : Math.log(10.0);
-
-                    if (x == 1.0) {
-                        when(mockLn.calculate(eq(x), eq(PRECISION))).thenReturn(0.0);
-                        when(mockLn.calculate(eq(2.0), eq(PRECISION))).thenReturn(ln2);
-                        when(mockLn.calculate(eq(3.0), eq(PRECISION))).thenReturn(ln3);
-                        when(mockLn.calculate(eq(5.0), eq(PRECISION))).thenReturn(ln5);
-                        when(mockLn.calculate(eq(10.0), eq(PRECISION))).thenReturn(ln10);
-
-                        assertThrows(ArithmeticException.class, () -> system.calculate(x, PRECISION));
-                    } else {
-                        when(mockLn.calculate(eq(x), eq(PRECISION))).thenReturn(lnVal);
-                        when(mockLn.calculate(eq(2.0), eq(PRECISION))).thenReturn(ln2);
-                        when(mockLn.calculate(eq(3.0), eq(PRECISION))).thenReturn(ln3);
-                        when(mockLn.calculate(eq(5.0), eq(PRECISION))).thenReturn(ln5);
-                        when(mockLn.calculate(eq(10.0), eq(PRECISION))).thenReturn(ln10);
-
-                        double actual = system.calculate(x, PRECISION);
-
-                        assertEquals(expected, actual, 0.05, "Несовпадение при x = " + x);
-                    }
+                    double actual = system.calculate(x, PRECISION);
+                    assertEquals(expected, actual, DELTA, "Несовпадение при x = " + x);
                 }
-            } catch (Exception e) {
-                fail("Ошибка при x = " + x + ": " + e.getMessage());
+
+            } else if (x > 0) {
+                double lnVal = lnValues.get(x);
+                double ln2 = lnValues.get(2.0);
+                double ln3 = lnValues.get(3.0);
+                double ln5 = lnValues.get(5.0);
+                double ln10 = lnValues.get(10.0);
+
+                if (x == 1.0) {
+                    when(mockLn.calculate(x, PRECISION)).thenReturn(0.0);
+                    when(mockLn.calculate(2.0, PRECISION)).thenReturn(ln2);
+                    when(mockLn.calculate(3.0, PRECISION)).thenReturn(ln3);
+                    when(mockLn.calculate(5.0, PRECISION)).thenReturn(ln5);
+                    when(mockLn.calculate(10.0,PRECISION)).thenReturn(ln10);
+
+                    assertThrows(ArithmeticException.class, () -> system.calculate(x, PRECISION));
+                } else {
+                    when(mockLn.calculate(x, PRECISION)).thenReturn(lnVal);
+                    when(mockLn.calculate(2.0, PRECISION)).thenReturn(ln2);
+                    when(mockLn.calculate(3.0, PRECISION)).thenReturn(ln3);
+                    when(mockLn.calculate(5.0, PRECISION)).thenReturn(ln5);
+                    when(mockLn.calculate(10.0, PRECISION)).thenReturn(ln10);
+
+                    double actual = system.calculate(x, PRECISION);
+                    assertEquals(expected, actual, 0.05, "Несовпадение при x = " + x);
+                }
             }
         }
     }
