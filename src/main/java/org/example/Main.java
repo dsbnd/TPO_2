@@ -10,68 +10,39 @@ import org.example.level2.SecFunction;
 import org.example.level2.TanFunction;
 import org.example.level3.LeftBranchFunction;
 import org.example.level3.RightBranchFunction;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication; // Нужно добавить этот импорт
 
-import java.util.Arrays;
-import java.util.List;
 
+@SpringBootApplication
 public class Main {
     public static void main(String[] args) {
 
-        // Создаем базовые функции
-        SinFunction sin = new SinFunction();
-        LnFunction ln = new LnFunction();
+//        SpringApplication.run(Main.class, args);
 
-        // Создаем функции первого уровня
-        CosFunction cos = new CosFunction(sin);
+        MathFunction sin1 = new SinFunction();
+        CsvWriter writer = new CsvWriter("sin_results.csv", " -> ");
+        writer.write(sin1, -3.0, 3.0, 0.5, 0.0001);
 
-        // Создаем функции второго уровня
-        CscFunction csc = new CscFunction(sin);
-        SecFunction sec = new SecFunction(cos);
-        TanFunction tan = new TanFunction(sin, cos);
 
-        // Создаем логарифмы
-        LogFunction log2 = new LogFunction(ln, 2.0);
-        LogFunction log3 = new LogFunction(ln, 3.0);
-        LogFunction log5 = new LogFunction(ln, 5.0);
-        LogFunction log10 = new LogFunction(ln, 10.0);
+        CsvWriter writer2 = new CsvWriter("all_results.csv", ";");
 
-        // Создаем ветки
-        LeftBranchFunction leftBranch = new LeftBranchFunction(sin, cos, csc, sec, tan);
-        RightBranchFunction rightBranch = new RightBranchFunction(ln, log2, log3, log5, log10);
+        MathFunction sin2 = new SinFunction();
+        MathFunction cos = new CosFunction(sin2);
+        MathFunction csc = new CscFunction(sin2);
+        MathFunction sec = new SecFunction(cos);
+        MathFunction tan = new TanFunction(sin2, cos);
+        MathFunction leftBranch = new LeftBranchFunction(sin2, cos, csc, sec, tan);
 
-        // Создаем систему
+        MathFunction ln = new LnFunction();
+        MathFunction log2 = new LogFunction(ln, 2.0);
+        MathFunction log3 = new LogFunction(ln, 3.0);
+        MathFunction log5 = new LogFunction(ln, 5.0);
+        MathFunction log10 = new LogFunction(ln, 10.0);
+        MathFunction rightBranch = new RightBranchFunction(ln, log2, log3, log5, log10);
+
         SystemOfFunctions system = new SystemOfFunctions(leftBranch, rightBranch);
-
-        System.out.println("Генерация CSV файлов...");
-
-        // 1. Тригонометрические функции (для всех x)
-        new CsvWriter("src/test/resources/sin_values.csv", ",").write(sin, -5.0, 5.0, 0.5, 0.0001);
-        new CsvWriter("src/test/resources/cos_values.csv", ",").write(cos, -5.0, 5.0, 0.5, 0.0001);
-        new CsvWriter("src/test/resources/tan_values.csv", ",").write(tan, -5.0, 5.0, 0.5, 0.0001);
-        new CsvWriter("src/test/resources/csc_values.csv", ",").write(csc, -5.0, 5.0, 0.5, 0.0001);
-        new CsvWriter("src/test/resources/sec_values.csv", ",").write(sec, -5.0, 5.0, 0.5, 0.0001);
-
-        // 2. Логарифмические функции (только x > 0)
-        new CsvWriter("src/test/resources/ln_values.csv", ",").write(ln, 0.1, 5.0, 0.5, 0.0001);
-        new CsvWriter("src/test/resources/log2_values.csv", ",").write(log2, 0.1, 5.0, 0.5, 0.0001);
-        new CsvWriter("src/test/resources/log3_values.csv", ",").write(log3, 0.1, 5.0, 0.5, 0.0001);
-        new CsvWriter("src/test/resources/log5_values.csv", ",").write(log5, 0.1, 5.0, 0.5, 0.0001);
-        new CsvWriter("src/test/resources/log10_values.csv", ",").write(log10, 0.1, 5.0, 0.5, 0.0001);
-
-        // 3. Вся система
-        new CsvWriter("src/test/resources/system_expected.csv", ",").write(system, -5.0, 5.0, 0.5, 0.0001);
-
-        // 4. test_points.csv с теми же данными
-        new CsvWriter("src/test/resources/test_points.csv", ",").write(system, -5.0, 5.0, 0.5, 0.0001);
-
-        // 5. Детальный файл с шагом 0.1 для более точных значений
-        new CsvWriter("src/test/resources/system_detailed.csv", ",").write(system, -5.0, 5.0, 0.1, 0.0001);
-
-        System.out.println("Все CSV файлы созданы в папке src/test/resources/");
-
-        // Выводим количество сгенерированных строк
-        System.out.println("\nСгенерировано строк в system_expected.csv:");
-        System.out.println("  от -5.0 до 5.0 с шагом 0.5: " +
-                ((5.0 - (-5.0)) / 0.5 + 1) + " строк");
+        writer2.write(system, -10.0, 10.0, 0.5, 0.0001);
     }
+
 }

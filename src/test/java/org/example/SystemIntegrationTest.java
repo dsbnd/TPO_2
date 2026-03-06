@@ -87,7 +87,6 @@ class SystemIntegrationTest {
         verify(spyLeft, times(1)).calculate(eq(x), eq(PRECISION));
         verify(spyRight, never()).calculate(anyDouble(), anyDouble());
 
-         
         verify(spySin, atLeastOnce()).calculate(anyDouble(), anyDouble());
         verify(spyCos, atLeastOnce()).calculate(anyDouble(), anyDouble());
         verify(spyCsc, atLeastOnce()).calculate(anyDouble(), anyDouble());

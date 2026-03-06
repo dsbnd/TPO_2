@@ -4,7 +4,7 @@ public class SinFunction implements MathFunction {
     @Override
     public double calculate(double x, double precision) {
         if (Double.isNaN(x) || Double.isInfinite(x)) {
-            throw new IllegalArgumentException("x must be a finite number");
+            throw new IllegalArgumentException("x must be a number");
         }
 
         x = x % (2 * Math.PI);
@@ -14,7 +14,6 @@ public class SinFunction implements MathFunction {
         double term = x;
         double sum = term;
         int n = 1;
-
 
         while (Math.abs(term) > precision) {
             term = -term * x * x / ((2 * n) * (2 * n + 1));
