@@ -4,11 +4,9 @@ public class SinFunction implements MathFunction {
     @Override
     public double calculate(double x, double precision) {
         if (Double.isNaN(x) || Double.isInfinite(x)) {
-<<<<<<< HEAD
-            throw new IllegalArgumentException("x must be a number");
-=======
+
             throw new IllegalArgumentException("x должен быть конечным числом");
->>>>>>> 2de6cfc (commets)
+
         }
 
         x = x % (2 * Math.PI);
