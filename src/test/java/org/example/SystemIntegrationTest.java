@@ -210,7 +210,7 @@ class SystemIntegrationTest {
 
                     if (Double.isNaN(expected)) {
 
-                        System.out.println("✓ x = " + x + " - получено ожидаемое исключение: " + e.getMessage());
+                        System.out.println("x = " + x + " - получено ожидаемое исключение: " + e.getMessage());
                     } else {
                         fail("Неожиданное исключение при x = " + x + ": " + e.getMessage());
                     }
@@ -243,7 +243,7 @@ class SystemIntegrationTest {
 
                     if (Double.isNaN(expected)) {
 
-                        System.out.println("✓ x = " + x + " - получено ожидаемое исключение: " + e.getMessage());
+                        System.out.println("x = " + x + " - получено ожидаемое исключение: " + e.getMessage());
                     } else {
                         fail("Неожиданное исключение при x = " + x + ": " + e.getMessage());
                     }
@@ -276,14 +276,14 @@ class SystemIntegrationTest {
                 } else {
                     assertEquals(expected, result, DELTA, "Несовпадение при x = " + x);
                     passedPoints++;
-                    System.out.println("✓ x = " + x + " -> " + result + " (expected: " + expected + ")");
+                    System.out.println("x = " + x + " -> " + result + " (expected: " + expected + ")");
                 }
             } catch (Exception e) {
                 if (!Double.isNaN(expected)) {
-                    System.err.println("✗ x = " + x + " - неожиданное исключение: " + e.getMessage());
+                    System.err.println("x = " + x + " - неожиданное исключение: " + e.getMessage());
                 } else {
                     passedPoints++;
-                    System.out.println("✓ x = " + x + " - получено ожидаемое исключение: " + e.getClass().getSimpleName());
+                    System.out.println("x = " + x + " - получено ожидаемое исключение: " + e.getClass().getSimpleName());
                 }
             }
         }
@@ -335,12 +335,12 @@ class SystemIntegrationTest {
                 try {
                     double result = system.calculate(x, PRECISION);
                     assertEquals(expected, result, DELTA, "Несовпадение при x = " + x);
-                    System.out.println("✓ x = " + x + " -> " + result + " (expected: " + expected + ")");
+                    System.out.println("x = " + x + " -> " + result + " (expected: " + expected + ")");
                 } catch (Exception e) {
                     if (!Double.isNaN(expected)) {
                         fail("Неожиданное исключение при x = " + x + ": " + e.getMessage());
                     } else {
-                        System.out.println("✓ x = " + x + " - получено ожидаемое исключение");
+                        System.out.println("x = " + x + " - получено ожидаемое исключение");
                     }
                 }
             }
@@ -380,7 +380,7 @@ class SystemIntegrationTest {
                     if (deviation <= DELTA) {
                         passedPoints++;
                     } else {
-                        System.err.println("✗ x = " + x + " - большое отклонение: " +
+                        System.err.println("x = " + x + " - большое отклонение: " +
                                 result + " vs " + wolframValue + " (откл: " + deviation + ")");
                     }
                 }
@@ -389,10 +389,10 @@ class SystemIntegrationTest {
 
                     passedPoints++;
                     discontinuityPoints++;
-                    System.out.println("✓ x = " + x + " - получено исключение (Wolfram: NaN)");
+                    System.out.println("x = " + x + " - получено исключение (Wolfram: NaN)");
                 } else {
 
-                    System.err.println("✗ x = " + x + " - неожиданное исключение: " + e.getMessage());
+                    System.err.println("x = " + x + " - неожиданное исключение: " + e.getMessage());
                 }
             }
         }
@@ -428,14 +428,14 @@ class SystemIntegrationTest {
             assertThrows(Exception.class,
                     () -> system.calculate(x, PRECISION),
                     "В точке x = " + x + " должно быть исключение (Wolfram: NaN)");
-            System.out.println("✓ x = " + x + " - получено исключение (Wolfram: NaN)");
+            System.out.println("x = " + x + " - получено исключение (Wolfram: NaN)");
         } else {
 
             double wolframValue = Double.parseDouble(wolframStr);
             double result = system.calculate(x, PRECISION);
             assertEquals(wolframValue, result, DELTA,
                     "Несовпадение с Wolfram при x = " + x);
-            System.out.println("✓ x = " + x + " -> " + result + " (Wolfram: " + wolframValue + ")");
+            System.out.println("x = " + x + " -> " + result + " (Wolfram: " + wolframValue + ")");
         }
     }
 }
