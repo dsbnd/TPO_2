@@ -19,6 +19,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -74,53 +75,63 @@ class RightBranchIntegrationDasTest {
         }
     }
 
-
     @Test
-    void step1_AllMocks() {
-        // Шаг 1: Тестируем только саму формулу ветки. Всё остальное — моки.
-        RightBranchFunction branch = new RightBranchFunction(mockLn, mockLog2, mockLog3, mockLog5, mockLog10);
+    void step1_RealLog2_MockOthers() {
+        LogFunction realLog2 = new LogFunction(mockLn, 2.0);
+        RightBranchFunction branch = new RightBranchFunction(mockLn, realLog2, mockLog3, mockLog5, mockLog10);
         runBranchTest(branch);
     }
 
     @Test
-    void step2_RealLogs_MockLn() {
-        // Шаг 2: Реальные логарифмы по основанию, но они используют мок натурального логарифма
+    void step2_RealLog2_RealLog3_MockOthers() {
+        LogFunction realLog2 = new LogFunction(mockLn, 2.0);
+        LogFunction realLog3 = new LogFunction(mockLn, 3.0);
+        RightBranchFunction branch = new RightBranchFunction(mockLn, realLog2, realLog3, mockLog5, mockLog10);
+        runBranchTest(branch);
+    }
+
+    @Test
+    void step3_RealLog2_RealLog3_RealLog5_MockOthers() {
+        LogFunction realLog2 = new LogFunction(mockLn, 2.0);
+        LogFunction realLog3 = new LogFunction(mockLn, 3.0);
+        LogFunction realLog5 = new LogFunction(mockLn, 5.0);
+        RightBranchFunction branch = new RightBranchFunction(mockLn, realLog2, realLog3, realLog5, mockLog10);
+        runBranchTest(branch);
+    }
+
+    @Test
+    void step4_AllRealLogs_MockLnOnly() {
         LogFunction realLog2 = new LogFunction(mockLn, 2.0);
         LogFunction realLog3 = new LogFunction(mockLn, 3.0);
         LogFunction realLog5 = new LogFunction(mockLn, 5.0);
         LogFunction realLog10 = new LogFunction(mockLn, 10.0);
-
         RightBranchFunction branch = new RightBranchFunction(mockLn, realLog2, realLog3, realLog5, realLog10);
         runBranchTest(branch);
     }
 
     @Test
-    void step3_AllRealObjects() {
-        // Шаг 3: Полностью реальная правая ветка (никаких моков)
+    void step5_AllRealObjects() {
         LnFunction realLn = new LnFunction();
         LogFunction realLog2 = new LogFunction(realLn, 2.0);
         LogFunction realLog3 = new LogFunction(realLn, 3.0);
         LogFunction realLog5 = new LogFunction(realLn, 5.0);
         LogFunction realLog10 = new LogFunction(realLn, 10.0);
-
         RightBranchFunction branch = new RightBranchFunction(realLn, realLog2, realLog3, realLog5, realLog10);
         runBranchTest(branch);
     }
 
-    // =========================================================================
-    // ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ
-    // =========================================================================
-
     private void runBranchTest(RightBranchFunction branch) {
         for (Map.Entry<Double, Double> entry : systemExpectedValues.entrySet()) {
             double x = entry.getKey();
-            // Правая ветка работает только при X > 0
+
             if (x <= 0) continue;
 
             double expected = entry.getValue();
-            setupMocksForRightBranch(x);
+            boolean expectNaN = Double.isNaN(expected);
 
-            if (Double.isNaN(expected)) {
+            setupMocksForRightBranch(x, expectNaN);
+
+            if (expectNaN) {
                 assertThrows(ArithmeticException.class, () -> branch.calculate(x, PRECISION));
             } else {
                 double actual = branch.calculate(x, PRECISION);
@@ -130,25 +141,24 @@ class RightBranchIntegrationDasTest {
         }
     }
 
-    private void setupMocksForRightBranch(double x) {
-        // 1. Учим мок натурального логарифма (Ln)
-        when(mockLn.calculate(eq(x), eq(PRECISION))).thenReturn(lnValues.getOrDefault(x, 0.0));
-        when(mockLn.calculate(eq(2.0), eq(PRECISION))).thenReturn(lnValues.getOrDefault(2.0, Math.log(2.0)));
-        when(mockLn.calculate(eq(3.0), eq(PRECISION))).thenReturn(lnValues.getOrDefault(3.0, Math.log(3.0)));
-        when(mockLn.calculate(eq(5.0), eq(PRECISION))).thenReturn(lnValues.getOrDefault(5.0, Math.log(5.0)));
-        when(mockLn.calculate(eq(10.0), eq(PRECISION))).thenReturn(lnValues.getOrDefault(10.0, Math.log(10.0)));
+    private void setupMocksForRightBranch(double x, boolean expectNaN) {
+        when(mockLn.calculate(eq(2.0), anyDouble())).thenReturn(lnValues.getOrDefault(2.0, Math.log(2.0)));
+        when(mockLn.calculate(eq(3.0), anyDouble())).thenReturn(lnValues.getOrDefault(3.0, Math.log(3.0)));
+        when(mockLn.calculate(eq(5.0), anyDouble())).thenReturn(lnValues.getOrDefault(5.0, Math.log(5.0)));
+        when(mockLn.calculate(eq(10.0), anyDouble())).thenReturn(lnValues.getOrDefault(10.0, Math.log(10.0)));
 
-        // 2. Учим моки логарифмов по основанию (нужны только для Шага 1)
-        if (Double.isNaN(systemExpectedValues.getOrDefault(x, 0.0))) {
-            when(mockLog2.calculate(eq(x), eq(PRECISION))).thenThrow(new ArithmeticException());
-            when(mockLog3.calculate(eq(x), eq(PRECISION))).thenThrow(new ArithmeticException());
-            when(mockLog5.calculate(eq(x), eq(PRECISION))).thenThrow(new ArithmeticException());
-            when(mockLog10.calculate(eq(x), eq(PRECISION))).thenThrow(new ArithmeticException());
+        if (expectNaN) {
+            when(mockLn.calculate(eq(x), anyDouble())).thenThrow(new ArithmeticException());
+            when(mockLog2.calculate(eq(x), anyDouble())).thenThrow(new ArithmeticException());
+            when(mockLog3.calculate(eq(x), anyDouble())).thenThrow(new ArithmeticException());
+            when(mockLog5.calculate(eq(x), anyDouble())).thenThrow(new ArithmeticException());
+            when(mockLog10.calculate(eq(x), anyDouble())).thenThrow(new ArithmeticException());
         } else {
-            when(mockLog2.calculate(eq(x), eq(PRECISION))).thenReturn(log2Values.getOrDefault(x, 0.0));
-            when(mockLog3.calculate(eq(x), eq(PRECISION))).thenReturn(log3Values.getOrDefault(x, 0.0));
-            when(mockLog5.calculate(eq(x), eq(PRECISION))).thenReturn(log5Values.getOrDefault(x, 0.0));
-            when(mockLog10.calculate(eq(x), eq(PRECISION))).thenReturn(log10Values.getOrDefault(x, 0.0));
+            when(mockLn.calculate(eq(x), anyDouble())).thenReturn(lnValues.getOrDefault(x, Math.log(x)));
+            when(mockLog2.calculate(eq(x), anyDouble())).thenReturn(log2Values.getOrDefault(x, Math.log(x) / Math.log(2.0)));
+            when(mockLog3.calculate(eq(x), anyDouble())).thenReturn(log3Values.getOrDefault(x, Math.log(x) / Math.log(3.0)));
+            when(mockLog5.calculate(eq(x), anyDouble())).thenReturn(log5Values.getOrDefault(x, Math.log(x) / Math.log(5.0)));
+            when(mockLog10.calculate(eq(x), anyDouble())).thenReturn(log10Values.getOrDefault(x, Math.log(x) / Math.log(10.0)));
         }
     }
 }
